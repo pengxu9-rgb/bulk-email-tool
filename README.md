@@ -73,31 +73,35 @@ python app.py
 推荐的 CSV 表头：
 
 - `email`（必需）：收件人邮箱
-- `name`（可选）：收件人姓名
-- `subject`（可选）：该行独立标题（若空则使用表单里的标题）
+- `name`（可选）：收件人姓名（用于个性化称呼）
+- `subject`（可选）：该行独立标题（若表单中未填写标题模板时可使用）
 - `body`（可选）：该行独立正文（若空则使用正文模板）
+- 其它字段（可选）：你希望在标题 / 正文模板中引用的字段，例如 `company`、`plan` 等。
 
-示例：
+简单示例：
 
 ```csv
-email,name
-user1@example.com,Alice
-user2@example.com,Bob
+email,name,company
+user1@example.com,Alice,Acme Inc.
+user2@example.com,Bob,Contoso
 ```
+
+你也可以直接使用页面上的示例下载链接（`sample.csv`）作为起点。
 
 ### 5. 模板占位符
 
-在网页表单里的“邮件正文模板”中，可以使用：
+在网页表单里的“邮件标题模板”和“邮件正文模板”中，可以使用：
 
 - `$name`：来自 CSV 的 `name` 列
 - `$email`：来自 CSV 的 `email` 列
 - 其它列：例如 CSV 里有 `company` 列，则可以写 `$company`
 
-如果某一行在 CSV 中包含 `body` 列，则该行会直接使用 `body` 的内容，不再套用模板。
+示例标题模板：`关于 $name 在 $company 的开通通知`
+
+如果某一行在 CSV 中包含 `body` 列，则该行会直接使用 `body` 的内容，不再套用正文模板。
 
 ### 6. 给同事使用的方式
 
 - 技术同事负责在服务器上部署本工具，并配置 Gmail / 飞书邮箱账号的环境变量。
 - 将访问地址（例如公司内网域名）发给需要群发邮件的同事。
 - 同事只需要准备好 CSV、在网页选择账号并上传即可发送，不需要接触账号密码。
-

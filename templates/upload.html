@@ -62,8 +62,13 @@
           - 服务器只在本次请求内使用，不会保存到数据库（请确保访问地址是 HTTPS）。
         </div>
 
-        <label for="subject">邮件标题</label>
-        <input id="subject" name="subject" type="text" required placeholder="例如：关于本次活动的通知">
+        <label for="subject">邮件标题模板</label>
+        <input id="subject" name="subject" type="text" placeholder="例如：关于 $name 的活动通知">
+        <div class="help">
+          - 可使用占位符（与正文模板类似）：<code>$name</code>、<code>$email</code>、以及 CSV 里的其它列（如 <code>$company</code>）；<br>
+          - 如果填写，则所有收件人的标题会根据各自 CSV 数据自动替换生成；<br>
+          - 如果留空，则尝试使用 CSV 中的 <code>subject</code> 列（如也为空，将使用“无标题”）。
+        </div>
 
         <label for="body_template">邮件正文模板</label>
         <textarea id="body_template" name="body_template" placeholder="例如：&#10;Hi $name,&#10;&#10;这是一次测试邮件。&#10;&#10;谢谢！"></textarea>
@@ -75,11 +80,12 @@
         <label for="file">收件人 CSV 文件</label>
         <input id="file" name="file" type="file" accept=".csv" required>
         <div class="help">
-          推荐 CSV 列：<code>email</code>（必需）、<code>name</code>（可选）、<code>subject</code>（可选）、<code>body</code>（可选）。<br>
-          例如：<br>
-          <code>email,name</code><br>
-          <code>user1@example.com,Alice</code><br>
-          <code>user2@example.com,Bob</code>
+          推荐 CSV 列：<code>email</code>（必需）、<code>name</code>（可选）、<code>subject</code>（可选）、<code>body</code>（可选）、以及你需要在模板里使用的其它字段（如 <code>company</code>）。<br>
+          简单示例：<br>
+          <code>email,name,company</code><br>
+          <code>user1@example.com,Alice,Acme Inc.</code><br>
+          <code>user2@example.com,Bob,Contoso</code><br>
+          你也可以直接下载一个示例 CSV 文件：<a href="{{ url_for('static', filename='sample.csv') }}">sample.csv</a>
         </div>
 
         <button class="btn" type="submit">开始发送</button>

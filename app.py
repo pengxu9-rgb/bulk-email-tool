@@ -169,17 +169,13 @@ def send():
     account_name = request.form.get("account", "gmail")
     smtp_user = (request.form.get("smtp_user") or "").strip()
     smtp_password = (request.form.get("smtp_password") or "").strip()
-    subject = (request.form.get("subject") or "").strip()
+    subject_template_str = (request.form.get("subject") or "").strip()
     body_template_str = (request.form.get("body_template") or "").strip()
 
     file = request.files.get("file")
 
     if not file or file.filename == "":
         flash("请上传 CSV 文件", "error")
-        return redirect(url_for("index"))
-
-    if not subject:
-        flash("请填写邮件标题", "error")
         return redirect(url_for("index"))
 
     try:
@@ -198,7 +194,8 @@ def send():
         flash(f"解析 CSV 失败: {exc}", "error")
         return redirect(url_for("index"))
 
-    template = Template(body_template_str or "")
+    subject_template = Template(subject_template_str or "")
+    body_template = Template(body_template_str or "")
 
     messages = []
     for row in rows:
@@ -207,15 +204,19 @@ def send():
             continue
 
         to_name = row.get("name", "")
-        row_subject = row.get("subject") or subject
+        context = dict(row)
+        context.setdefault("name", to_name)
+        context.setdefault("email", email)
+
+        if subject_template_str:
+            row_subject = subject_template.safe_substitute(context)
+        else:
+            row_subject = (row.get("subject") or "").strip() or "无标题"
 
         if row.get("body"):
             body = row["body"]
         else:
-            context = dict(row)
-            context.setdefault("name", to_name)
-            context.setdefault("email", email)
-            body = template.safe_substitute(context)
+            body = body_template.safe_substitute(context)
 
         messages.append(
             {
