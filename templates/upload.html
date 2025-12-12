@@ -65,9 +65,8 @@
         <label for="subject">邮件标题模板</label>
         <input id="subject" name="subject" type="text" placeholder="例如：关于 $name 的活动通知">
         <div class="help">
-          - 可使用占位符（与正文模板类似）：<code>$name</code>、<code>$email</code>、以及 CSV 里的其它列（如 <code>$company</code>）；<br>
-          - 如果填写，则所有收件人的标题会根据各自 CSV 数据自动替换生成；<br>
-          - 如果留空，则尝试使用 CSV 中的 <code>subject</code> 列（如也为空，将使用“无标题”）。
+          - 如果你想完全由 CSV 决定每个人不同的标题，可以在 CSV 里为每行填写 <code>subject</code> 列，并把这里留空；<br>
+          - 也可以使用占位符（与正文模板类似）：<code>$name</code>、<code>$email</code>、以及 CSV 里的其它列（如 <code>$company</code>），由模板生成个性化标题。
         </div>
 
         <label for="body_template">邮件正文模板</label>
@@ -81,10 +80,11 @@
         <input id="file" name="file" type="file" accept=".csv" required>
         <div class="help">
           推荐 CSV 列：<code>email</code>（必需）、<code>name</code>（可选）、<code>subject</code>（可选）、<code>body</code>（可选）、以及你需要在模板里使用的其它字段（如 <code>company</code>）。<br>
-          简单示例：<br>
-          <code>email,name,company</code><br>
-          <code>user1@example.com,Alice,Acme Inc.</code><br>
-          <code>user2@example.com,Bob,Contoso</code><br>
+          - 如果你希望每个收件人的标题和正文都完全不同，建议至少包含 <code>subject</code> 和 <code>body</code> 列，并在上方标题 / 正文模板中留空。<br>
+          - 示例（每个人完全不同的标题和正文）：<br>
+          <code>email,name,subject,body</code><br>
+          <code>user1@example.com,Alice,Welcome Alice,"Dear Alice, this is your email."</code><br>
+          <code>user2@example.com,Bob,Special for Bob,"Dear Bob, this is a totally different email."</code><br>
           你也可以直接下载一个示例 CSV 文件：<a href="{{ url_for('static', filename='sample.csv') }}">sample.csv</a>
         </div>
 

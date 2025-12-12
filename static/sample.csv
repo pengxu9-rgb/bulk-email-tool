@@ -1,4 +1,4 @@
-email,name,company
-alice@example.com,Alice,Acme Inc.
-bob@example.com,Bob,Contoso
+email,name,subject,body
+alice@example.com,Alice,Welcome Alice,"Dear Alice, thank you for joining our platform. This is your personalized introduction email."
+bob@example.com,Bob,Special offer for Bob,"Dear Bob, here is an exclusive offer prepared just for you. The content of this email is completely different from Alice's."
 
