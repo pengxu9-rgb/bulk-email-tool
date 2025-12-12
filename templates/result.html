@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <title>发送结果</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      body { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 2rem; }
+      .container { max-width: 800px; margin: 0 auto; }
+      table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.9rem; }
+      th, td { border: 1px solid #e5e7eb; padding: 0.4rem 0.5rem; text-align: left; }
+      th { background-color: #f3f4f6; }
+      .ok { color: #15803d; }
+      .fail { color: #b91c1c; }
+      .btn { margin-top: 1.5rem; padding: 0.6rem 1.2rem; background-color: #2563eb; color: #fff; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; }
+      .btn:hover { background-color: #1d4ed8; }
+      .summary { margin-top: 1rem; }
+      .summary span { margin-right: 1rem; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>发送结果</h1>
+
+      <div class="summary">
+        <p>
+          使用账号：<strong>{{ account_name }}</strong><br>
+          总共待发送：<strong>{{ total }}</strong> 封<br>
+          成功：<span class="ok">{{ success|length }}</span> 封，
+          失败：<span class="fail">{{ failed|length }}</span> 封
+        </p>
+      </div>
+
+      {% if success %}
+        <h2>成功列表</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>收件人</th>
+              <th>姓名</th>
+              <th>标题</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in success %}
+              <tr>
+                <td>{{ item.to_email or item["to_email"] }}</td>
+                <td>{{ item.to_name or item["to_name"] }}</td>
+                <td>{{ item.subject or item["subject"] }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% endif %}
+
+      {% if failed %}
+        <h2>失败列表</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>收件人</th>
+              <th>姓名</th>
+              <th>标题</th>
+              <th>错误</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in failed %}
+              <tr>
+                <td>{{ item.to_email or item["to_email"] }}</td>
+                <td>{{ item.to_name or item["to_name"] }}</td>
+                <td>{{ item.subject or item["subject"] }}</td>
+                <td class="fail">{{ item.error or item["error"] }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% endif %}
+
+      <a class="btn" href="{{ url_for('index') }}">返回重新上传</a>
+    </div>
+  </body>
+  </html>
+
