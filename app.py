@@ -42,7 +42,11 @@ ACCOUNT_DEFAULTS = {
 }
 
 
-def load_account_config(account_name: str) -> dict:
+def load_account_config(
+    account_name: str,
+    user_override: str | None = None,
+    password_override: str | None = None,
+) -> dict:
     account_name = account_name.lower()
     if account_name not in ACCOUNT_DEFAULTS:
         raise ValueError(f"Unknown account: {account_name}")
@@ -50,13 +54,17 @@ def load_account_config(account_name: str) -> dict:
     prefix = account_name.upper()
     defaults = ACCOUNT_DEFAULTS[account_name]
 
-    user = os.getenv(f"{prefix}_SMTP_USER")
-    password = os.getenv(f"{prefix}_SMTP_PASSWORD")
+    env_user = os.getenv(f"{prefix}_SMTP_USER")
+    env_password = os.getenv(f"{prefix}_SMTP_PASSWORD")
+
+    user = (user_override or "").strip() or env_user
+    password = (password_override or "").strip() or env_password
 
     if not user or not password:
         raise RuntimeError(
             f"Missing credentials for {account_name}. "
-            f"Please set {prefix}_SMTP_USER and {prefix}_SMTP_PASSWORD."
+            f"Please either provide email and password on the page "
+            f"or set {prefix}_SMTP_USER and {prefix}_SMTP_PASSWORD."
         )
 
     host = os.getenv(f"{prefix}_SMTP_HOST", defaults["host"])
@@ -159,6 +167,8 @@ def index():
 @app.route("/send", methods=["POST"])
 def send():
     account_name = request.form.get("account", "gmail")
+    smtp_user = (request.form.get("smtp_user") or "").strip()
+    smtp_password = (request.form.get("smtp_password") or "").strip()
     subject = (request.form.get("subject") or "").strip()
     body_template_str = (request.form.get("body_template") or "").strip()
 
@@ -173,7 +183,11 @@ def send():
         return redirect(url_for("index"))
 
     try:
-        account = load_account_config(account_name)
+        account = load_account_config(
+            account_name,
+            user_override=smtp_user or None,
+            password_override=smtp_password or None,
+        )
     except Exception as exc:  # noqa: BLE001
         flash(str(exc), "error")
         return redirect(url_for("index"))
@@ -230,4 +244,3 @@ def send():
 if __name__ == "__main__":
     # 本地开发直接运行：python app.py
     app.run(host="0.0.0.0", port=int(os.getenv("PORT", "5000")), debug=True)
-

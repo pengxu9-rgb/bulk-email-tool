@@ -37,14 +37,29 @@
       </div>
 
       <form action="{{ url_for('send') }}" method="post" enctype="multipart/form-data">
-        <label for="account">发件账号</label>
+        <label for="account">发件邮箱类型</label>
         <select id="account" name="account">
           {% for acc in accounts %}
             <option value="{{ acc }}">{{ acc|capitalize }}</option>
           {% endfor %}
         </select>
         <div class="help">
-          后端通过环境变量配置账号信息，例如：<code>GMAIL_SMTP_USER</code> / <code>FEISHU_SMTP_USER</code>。
+          这里选择的是邮箱服务类型（Gmail / 飞书邮箱），下面可以填写具体邮箱账号和密码。
+        </div>
+
+        <label for="smtp_user">发件邮箱地址</label>
+        <input id="smtp_user" name="smtp_user" type="text" placeholder="例如：yourname@gmail.com 或 yourname@feishu.cn">
+        <div class="help">
+          - 如果填写，则优先使用这里的邮箱账号发送；<br>
+          - 如果留空，则使用运维在服务器上配置的环境变量账号（<code>GMAIL_SMTP_USER</code> / <code>FEISHU_SMTP_USER</code>）。
+        </div>
+
+        <label for="smtp_password">邮箱密码 / 应用专用密码</label>
+        <input id="smtp_password" name="smtp_password" type="password" autocomplete="off" placeholder="仅本次发送使用，不会存储">
+        <div class="help">
+          - Gmail 建议使用“应用专用密码”；<br>
+          - 飞书邮箱可使用邮箱密码或专用授权码；<br>
+          - 服务器只在本次请求内使用，不会保存到数据库（请确保访问地址是 HTTPS）。
         </div>
 
         <label for="subject">邮件标题</label>
@@ -73,12 +88,12 @@
       <div class="card">
         <h2>使用说明（给同事）</h2>
         <ol>
-          <li>管理员在服务器上配置环境变量（Gmail / 飞书邮箱账号和密码）。</li>
-          <li>同事在浏览器打开该网页，选择账号，上传自己的 CSV，即可批量发信。</li>
+          <li>同事在浏览器打开该网页，选择邮箱类型（Gmail / 飞书邮箱）。</li>
+          <li>在页面上填写自己的发件邮箱地址和密码 / 应用专用密码（仅本次发送使用）。</li>
+          <li>上传 CSV 文件并确认内容，点击“开始发送”。</li>
           <li>注意控制发送频率，确保收件人均为有授权的用户，避免被判定为垃圾邮件。</li>
         </ol>
       </div>
     </div>
   </body>
   </html>
-
